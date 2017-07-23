@@ -1,0 +1,47 @@
+<!--View Information-->
+<!--View name : Fake Sign Up-->
+<!--State name : app.fakeSignUp-->
+<!--URL : #app/fakeSignUp-->
+
+<ion-view title="Sign Up Groseer">
+    
+
+    <!--social sign up section-->
+    <ion-content id="social-sign-up-content">
+        <div class="app-icon">
+            <img src="img/app_icon.png" class="md-card-image">
+        </div>
+        <!--input section-->
+        <md-input-container md-no-float="">
+                <input class="user-name" placeholder="Shop Name" ng-model="user.shopname">
+        </md-input-container>
+        <md-input-container md-no-float="">
+                <input class="user-name" placeholder="Owner Name" ng-model="user.ownername">
+        </md-input-container>
+        <md-input-container md-no-float="">
+                <input type="password" class="user-password" placeholder="Password" ng-model="user.password">
+        </md-input-container>
+        <md-input-container md-no-float="">
+                <input type="password" class="user-password" placeholder="Confirm Password" ng-model="user.confirm">
+        </md-input-container>
+        <md-input-container md-no-float="">
+                <input class="user-name" placeholder="Email" ng-model="user.email" type="email">
+        </md-input-container>
+        <md-input-container md-no-float="">
+                <input class="user-name" placeholder="Alamat" ng-model="user.address">
+        </md-input-container>
+        <md-input-container md-no-float="">
+                <input class="user-name" placeholder="Telepon" ng-model="user.phone">
+        </md-input-container>
+        <div class="radio-container"  ng-click="doAction()">
+            <md-radio-group>
+                <md-radio-button value="Photo" class="md-default-theme md-checked" aria-checked="true">{{photo}}</md-radio-button>
+            </md-radio-group>
+        </div>
+        <!--end input section-->
+        <a ng-if="isPhoto" class="md-raised social-button md-button md-default-theme material-background" ng-click="createMember(user)">
+            Sign Up
+        </a>
+
+    </ion-content><!--end social sign up section-->
+</ion-view>

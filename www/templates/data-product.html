@@ -1,0 +1,89 @@
+<!--View Information-->
+<!--View name : Cube Feed-->
+<!--State name : app.cubeFeed-->
+<!--URL : #app/cubeFeed-->
+<!--View Information-->
+<!--View name : Product List-->
+<!--Controller name : productListCtrl-->
+<!--Controller path : www/templates/share-application-content/social-share/js/controllers.js-->
+<!--State name : app.productList-->
+<!--URL : #app/productList-->
+
+<ion-view view-title="Data Product">
+    <!--product list section-->
+    <ion-content id="product-list-content" class="fade-in">
+
+        <!--toolbar section-->
+        <md-toolbar class="bar-subheader md-tall md-primary toolbar-medium toolbar-in-content">
+            <div>
+                <h1>Data Product</h1>
+
+                <md-input-container md-no-float="">
+                    <input ng-model="filterText" id="name_2" placeholder="Search for products.">
+                </md-input-container>
+
+            </div>
+        </md-toolbar><!--end toolbar section-->
+
+        <div class="row">
+            <div class="col">
+                <!--pin section-->
+                <div class="pin" ng-if="$even" ng-repeat="product in productList  |  filter: filterText | orderBy: 'productCode'"
+                     ng-click="navigateTo('app.productDetail',product)">
+                    <img ng-src="data:image/jpeg;base64,{{product.productPhoto}}"/>
+
+                    <h1>{{product.productCode}}</h1>
+
+                    <p>
+                        {{product.productName}}
+                    </p>
+
+                    <div class="pin-footer">
+                        RP<span class="pin-footer text-left font-sale">{{product.productPrize}}</span>
+                        <span class="pin-footer text-left font-hot-sale">Rp{{product.productSellPrize}}</span>
+                        <span class="pin-footer text-right">+Edit</span>
+                    </div>
+                </div>  <!--end pin section-->
+            </div>
+
+            <div class="col">
+                <!--pin section-->
+                <div class="pin" ng-if="$odd" ng-repeat="product in productList  |  filter: filterText | orderBy: 'productCode'"
+                     ng-click="navigateTo('app.productDetail',product)">
+                    <img ng-src="data:image/jpeg;base64,{{product.productPhoto}}"/>
+
+                    <h1>{{product.productCode}}</h1>
+
+                    <p>
+                        {{product.productName}}
+                    </p>
+
+                    <div class="pin-footer">
+                        Rp<span class="pin-footer text-left font-sale">{{product.productPrize}}</span>
+                        <span class="pin-footer text-left font-hot-sale">Rp{{product.productSellPrize}}</span>
+                        <span class="pin-footer text-right">+Edit</span>
+                    </div>
+                </div>  <!--end pin section-->
+            </div>
+        </div>
+
+        <ion-infinite-scroll on-infinite="loadMore()" distance="1%">
+        </ion-infinite-scroll>
+    </ion-content><!--end product list section-->
+
+    <!--button section-->
+    <div class="footer-fab-bar">
+        <a class="md-button md-accent md-fab fab-footer" ng-click="navigateTo('app.productDetail',product)" aria-label="Add">
+            <i class="fa fa-cube"></i>
+        </a>
+    </div>
+    <!--end button section-->
+
+    <!--loading progress-->
+    <div id="product-list-loading-progress" class="loading-progress fade-in">
+        <ion-spinner ng-if="!isAndroid" class="progress-circular"></ion-spinner>
+        <md-progress-circular ng-if="isAndroid" md-mode="indeterminate"></md-progress-circular>
+    </div><!--end loading progress-->
+
+
+</ion-view>
