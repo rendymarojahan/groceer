@@ -63,12 +63,9 @@
 		                <h2 class="md-title">{{displayOption.title}}</h2>
 
 		                <p>{{displayOption.content}}</p>
-                        <ion-item>
-                          <ion-range min="1" max="200" pin="true" [(ngModel)]="displayOption.input" color="secondary">
-                            <ion-icon range-left small name="displayOption.input"></ion-icon>
-                            <ion-icon range-right name="displayOption.input"></ion-icon>
-                          </ion-range>
-                        </ion-item>
+                        <md-input-container md-no-float>
+                            <input ng-model="displayOption.input" placeholder="input jumlah product..">
+                        </md-input-container>
 		            </div>
 		        </md-dialog-content>
 		        <div class="md-actions" layout="row">

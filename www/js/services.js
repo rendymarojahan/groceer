@@ -346,10 +346,10 @@ angular.module('starter.services', [])
         };
 })
 
-.service("CategoryTypeService", function () {
-        var cattype = this;
-        cattype.updateType = function (value) {
-            this.typeSelected = value;
+.service("AddProductService", function () {
+        var numpro = this;
+        numpro.addNum = function (value) {
+            this.amount = value;
         }
 })
 

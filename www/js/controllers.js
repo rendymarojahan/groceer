@@ -181,6 +181,29 @@ angular.module('starter.controllers', [])
     };
 })
 
+.controller('ProductDialogController', function ($scope, $mdDialog, displayOption, $mdToast, $timeout, AddProductService) {
+
+    //This variable for display wording of dialog.
+    //object schema:
+    //displayOption: {
+    //        title: "Confirm to remove all data?",
+    //        content: "All data will remove from local storage.",
+    //        ok: "Confirm",
+    //        cancel: "Close"
+    //}
+    $scope.displayOption = displayOption;
+
+    $scope.cancel = function () {
+        $mdDialog.cancel(); //close dialog.
+    };
+
+    $scope.ok = function () {
+        //hide dialog.
+        $mdDialog.hide();
+        AddProductService.addNum($scope.displayOption.input);
+    };
+})
+
 .controller('toastController', function ($scope, displayOption) {
 
     //this variable for display wording of toast.
@@ -881,7 +904,7 @@ angular.module('starter.controllers', [])
         $scope.initialForm();
 })  
 
-.controller('productListCtrl', function ($scope, $timeout, $state, $http, MasterFactory, $mdDialog, $mdToast) {
+.controller('productListCtrl', function ($scope, $timeout, $state, $http, MasterFactory, $mdDialog, $mdToast, AddProductService) {
 
     // This function is the first activity in the controller. 
     // It will initial all variable data and let the function works when page load.
@@ -919,13 +942,12 @@ angular.module('starter.controllers', [])
     $scope.addProduct = function (product, $event) {
 
 	    $mdDialog.show({
-		    controller: 'DialogController',
+		    controller: 'ProductDialogController',
 		    templateUrl: 'confirm-dialog.html',
 		    targetEvent: $event,
 		    locals: {
 		        displayOption: {
 		            title: "Add product?",
-		            input: 0,
 		            ok: "Add",
 		            cancel: "Close"
 		        }
@@ -933,7 +955,7 @@ angular.module('starter.controllers', [])
 		}).then(function () {
 		     // For confirm button to save data.
 		    try {
-		        
+		    	$scope.amount = AddProductService.amount;
 		        $mdToast.show({
 		            controller: 'toastController',
 		            templateUrl: 'toast.html',
@@ -941,14 +963,13 @@ angular.module('starter.controllers', [])
 		            position: 'top',
 		            locals: {
 		                displayOption: {
-		                    title: "Product Saved !"
+		                    title: $scope.amount + " Product Added !"
 		                }
 		            }
 		        });
 
 		        // After save success it will navigate back to contract list page.
 		        $timeout(function () {
-		            $ionicHistory.goBack();
 		        }, 800);
 		    }
 		    catch (e) {
