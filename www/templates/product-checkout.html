@@ -5,7 +5,7 @@
 <!--State name : app.productCheckout-->
 <!--URL : #app/productCheckout-->
 
-<ion-view view-title="Basket">
+<ion-view view-title="Kasir">
     <!--left button on navigation bar-->
     <ion-nav-buttons side="left">
         <a ng-click="$ionicGoBack()" class="button back-button buttons button-clear header-item nav-back-btn">
@@ -18,60 +18,17 @@
     <ion-header-bar class="bar-subheader" id="product-checkout-sub-header">
         <ion-scroll direction="x" id="product-checkout-product-list">
 
-            <div class="pin">
-                <img ng-src="{{'img/shirt_01.png'}}"/>
+            <div class="pin" ng-repeat="product in products">
+                <img ng-src="data:image/jpeg;base64,{{product.productPhoto}}"/>
 
-                <h1>Plain Shirt</h1>
+                <h1>{{product.productCode}}</h1>
 
                 <p>
-                    A shite with pain design.
+                    {{product.amount}}Pcs
                 </p>
 
                 <div class="pin-footer">
-                    <span class="pin-footer text-left font-sale">$900</span>
-                    <span class="pin-footer text-left font-hot-sale">$90</span>
-                </div>
-            </div>
-            <div class="pin">
-                <img ng-src="{{'img/shirt_02.png'}}"/>
-
-                <h1>Spring Shirt</h1>
-
-                <p>
-                    Made by high quality silk.
-                </p>
-
-                <div class="pin-footer">
-                    <span class="pin-footer text-left font-sale">$100</span>
-                    <span class="pin-footer text-left font-hot-sale">$10</span>
-                </div>
-            </div>
-            <div class="pin">
-                <img ng-src="{{'img/shirt_06.png'}}"/>
-
-                <h1>Green Shirt</h1>
-
-                <p>
-                    A shite with pain design.
-                </p>
-
-                <div class="pin-footer">
-                    <span class="pin-footer text-left font-sale">$190</span>
-                    <span class="pin-footer text-left font-hot-sale">$19</span>
-                </div>
-            </div>
-            <div class="pin">
-                <img ng-src="{{'img/shirt_05.png'}}"/>
-
-                <h1>Plain Shirt</h1>
-
-                <p>
-                    A shite with pain design.
-                </p>
-
-                <div class="pin-footer">
-                    <span class="pin-footer text-left font-sale">$999</span>
-                    <span class="pin-footer text-left font-hot-sale">$99</span>
+                    <span class="pin-footer text-left font-hot-sale">{{product.productSellPrize | currency:"Rp ":0}}</span>
                 </div>
             </div>
         </ion-scroll>
@@ -80,15 +37,38 @@
     <ion-content id="product-checkout-content">
         <div class="row">
             <div class="col total-summary">
-                TOTAL <span class="font-hot-sale">$218</span>
+                TOTAL <span class="font-hot-sale">{{totalBiaya | currency:"Rp ":0}}</span>
             </div>
         </div>
         <div class="row credit-card">
             <div class="col-25 credit-card-icon">
-                <i class="fa fa-credit-card"></i>
+                <i class="fa fa-user"></i>
             </div>
             <div class="col-67 credit-card-number">
-                <span class="card-number"> XXXX XXXX XXXX 9999</span>
+                <span class="card-number"> Pilih Pelanggan</span>
+            </div>
+            <div class="col-20">
+                <md-menu md-position-mode="target-right target" class="md-list-item-md-menu-right">
+
+                    <md-icon md-menu-origin ng-click="$mdOpenMenu()" md-svg-icon="more"></md-icon>
+
+                    <md-menu-content width="3">
+                        <md-menu-item ng-repeat="contract in contracts">
+                            <a class="md-button md-default-theme"
+                               ng-click="pelanggan(contract)">
+                                <span class="menu-item-button"> <i class="fa fa-user"></i> : {{contract.customerName}}</span>
+                            </a>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </div>
+        </div>
+        <div class="row credit-card">
+            <div class="col-25 credit-card-icon">
+                <i class="fa fa-sign-in"></i>
+            </div>
+            <div class="col-67 credit-card-number">
+                <span class="card-number"> Pilih Metode Pembayaran</span>
             </div>
             <div class="col-20">
                 <md-menu md-position-mode="target-right target" class="md-list-item-md-menu-right">
@@ -98,29 +78,71 @@
                     <md-menu-content width="3">
                         <md-menu-item>
                             <a class="md-button md-default-theme"
-                               ng-click="doSomeThing()">
-                                <span class="menu-item-button"> <i class="fa fa-credit-card"></i> : XXXX XXXX XXXX 8888</span>
+                               ng-click="cash()">
+                                <span class="menu-item-button"> <i class="fa fa-money"></i> : Cash</span>
                             </a>
                         </md-menu-item>
                         <md-menu-item>
-                            <a class="md-button md-default-theme" ng-click="doSomeThing()">
-                                <span class="menu-item-button"> <i class="fa fa-credit-card"></i> : XXXX XXXX XXXX 7777</span>
+                            <a class="md-button md-default-theme"
+                               ng-click="debit()">
+                                <span class="menu-item-button"> <i class="fa fa-cc-mastercard"></i> : Debit Card</span>
+                            </a>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <a class="md-button md-default-theme" ng-click="transfer()">
+                                <span class="menu-item-button"> <i class="fa fa-credit-card"></i> : Transfer</span>
                             </a>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
             </div>
         </div>
-
-        <div class="row shipping-address">
-            <div class="col-50 address-icon">
-                Shipping Address :
+        <div ng-show="isCash" class="row credit-card">
+            <div class="col-25 credit-card-icon">
+                <i class="fa fa-money"></i>
             </div>
-            <div class="col-50 selected-address">99/999 Ionic Building...</div>
+            <div class="col-67 credit-card-number">
+                <span class="card-number"> Cash</span>
+            </div>
+        </div>
+        <div ng-show="isDebit" class="row credit-card">
+            <div class="col-25 credit-card-icon">
+                <i class="fa fa-cc-mastercard"></i>
+            </div>
+            <div class="col-67 credit-card-number">
+                <span class="card-number"> Debit Card</span>
+            </div>
+        </div>
+        <div ng-show="isTransfer" class="row credit-card">
+            <div class="col-25 credit-card-icon">
+                <i class="fa fa-credit-card"></i>
+            </div>
+            <div class="col-67 credit-card-number">
+                <span class="card-number"> Transfer</span>
+            </div>
+        </div>
+        <div ng-show="isCash" class="row">
+            <div class="col complete-order">
+                <md-input-container md-no-float>
+                    <input ng-model="jlhUang" name="productCode" placeholder="Jumlah Uang" ng-change="kembalian(jlhUang)">
+                </md-input-container>
+            </div>
+            <div ng-show="jlhUang.length > 0" class="col complete-order">
+                <md-input-container md-no-float>
+                    <input ng-model="cashback" name="productCode" placeholder="Kembalian">
+                </md-input-container>
+            </div>
+        </div>
+        <div ng-show="isRefer" class="row">
+            <div class="col complete-order">
+                <md-input-container md-no-float>
+                    <input ng-model="refNumber" name="productCode" placeholder="Reference Number">
+                </md-input-container>
+            </div>
         </div>
         <div class="row">
             <div class="col complete-order">
-                <a ng-click="showConfirmDialog($event)"
+                <a ng-click="showListBottomSheet($event)"
                    class="md-raised social-button md-button md-default-theme material-background">
                     Complete Order
                 </a>
@@ -128,4 +150,21 @@
         </div>
     </ion-content><!--end product checkout content section-->
     <!--end product checkout section-->
+    <script type="text/ng-template" id="mobile-contract-actions-template.html">
+        <md-bottom-sheet class="md-list md-has-header">
+            <h1 class="md-bottom-sheet-header">Confirm Payment</h1>
+            <!--list section-->
+            <md-list>
+                <md-list-item>
+                    <a class="md-default-theme md-bottom-sheet-list-item"
+                       ng-class="{ 'disabled-link': disableSaveBtn}"
+                       ng-click="saveTransaction($event)">
+                        <i class="ion-android-list"></i>
+                        <span>Save</span>
+                    </a>
+                </md-list-item>
+            </md-list><!--end list section-->
+
+        </md-bottom-sheet>
+    </script><!--end angular template section-->
 </ion-view>

@@ -908,6 +908,7 @@ angular.module('starter.controllers', [])
 
     // This function is the first activity in the controller. 
     // It will initial all variable data and let the function works when page load.
+    $scope.checkout = [];
     $scope.initialForm = function () {
         // $scope.productList is the variable that store user product data.
         $scope.productList = MasterFactory.getProducts();
@@ -935,7 +936,7 @@ angular.module('starter.controllers', [])
     // objectData = object data that sent to destination page.
     $scope.navigateTo = function (targetPage, objectData) {
         $state.go(targetPage, {
-            product: objectData
+            product: $scope.checkout
         });
     };// End navigateTo.
 
@@ -956,6 +957,23 @@ angular.module('starter.controllers', [])
 		     // For confirm button to save data.
 		    try {
 		    	$scope.amount = AddProductService.amount;
+		    	$scope.temp = {
+		    		$id: product.$id,
+                    productCode: product.productCode,
+                    productName: product.productName,
+                    productDesc: product.productDesc,
+                    productSize: product.productSize,
+                    productPhoto: product.productPhoto,
+                    productColor: product.productColor,
+                    productPrize: product.productPrize,
+                    productSellPrize: product.productSellPrize,
+                    stockGudang: product.stockGudang,
+                    stockRumah: product.stockRumah,
+                    stockToko: product.stockToko,
+                    productStock: product.productStock,
+                    amount: $scope.amount
+                }
+                $scope.checkout.push($scope.temp);
 		        $mdToast.show({
 		            controller: 'toastController',
 		            templateUrl: 'toast.html',
@@ -967,7 +985,6 @@ angular.module('starter.controllers', [])
 		                }
 		            }
 		        });
-
 		        // After save success it will navigate back to contract list page.
 		        $timeout(function () {
 		        }, 800);
@@ -1101,15 +1118,65 @@ angular.module('starter.controllers', [])
     $scope.initialForm();
 })
 
-.controller('productCheckoutCtrl', function ($scope, $mdToast, $mdDialog) {
+.controller('productCheckoutCtrl', function ($scope, $mdToast, $mdDialog, $stateParams, MasterFactory, $mdBottomSheet, TransactionFactory, myCache) {
     //You can do some thing hear when tap on a credit card button.
-    $scope.doSomeThing = function () {
+    $scope.initialForm = function () {
+        // $scope.product is product detail
+        // $stateParams.product is the object that pass from product list page.
+        $scope.disableSaveBtn = false;
+        $scope.actionDelete = false;
+        $scope.cashback = 0;
+        $scope.products = $stateParams.product;
+        $scope.contracts = MasterFactory.getCustomers();
+        var biaya = 0;
+    	var modal = 0;
+    	var quantity = 0;
+        angular.forEach($scope.products, function (product) {
+	        if (product.$id !== "") {
+	              biaya = biaya + (parseFloat(product.amount) * parseFloat(product.productSellPrize));
+	              modal = modal + (parseFloat(product.amount) * parseFloat(product.productPrize));
+	              quantity = quantity + parseFloat(product.amount);
+	        }
+	    })
+	    $scope.selisih = biaya - modal;
+	    $scope.totalBiaya = biaya;
+	    $scope.quantity = quantity;
+    };// End initialForm.
+    $scope.kembalian = function (data) {
+    	$scope.cashback = data - $scope.totalBiaya;
+    	$scope.jlhUang = data;
+    }// End doSomeThing.
+    $scope.pelanggan = function (data) {
+    	$scope.customer = data;
+    }// End doSomeThing.
 
+    $scope.cash = function () {
+    	$scope.isCash = true;
+    	$scope.isDebit = false;
+    	$scope.isTransfer = false;
+    	$scope.isRefer = false;
+    	$scope.bayar = "Cash";
+    }// End doSomeThing.
+    $scope.debit = function () {
+    	$scope.isCash = false;
+    	$scope.isDebit = true;
+    	$scope.isTransfer = false;
+    	$scope.isRefer = true;
+    	$scope.bayar = "Debit";
+    }// End doSomeThing.
+    $scope.transfer = function () {
+    	$scope.isCash = false;
+    	$scope.isDebit = false;
+    	$scope.isTransfer = true;
+    	$scope.isRefer = true;
+    	$scope.bayar = "transfer";
     }// End doSomeThing.
 
     // showConfirmDialog for show alert box.
-    $scope.showConfirmDialog = function ($event) {
+    $scope.saveTransaction = function ($event) {
         //mdDialog.show use for show alert box for Confirm to complete order.
+        $mdBottomSheet.hide();
+
         $mdDialog.show({
             controller: 'DialogController',
             templateUrl: 'confirm-dialog.html',
@@ -1123,24 +1190,134 @@ angular.module('starter.controllers', [])
                 }
             }
         }).then(function () {
-            // For confirm button to complete order.
-            
-            //Showing Order Completed. Thank You ! toast.
-            $mdToast.show({
-                controller: 'toastController',
-                templateUrl: 'toast.html',
-                hideDelay: 1200,
-                position: 'top',
-                locals: {
-                    displayOption: {
-                        title: "Order Completed. Thank You !"
-                    }
+            try {
+                // Save contract to mobile contract by calling $cordovaContacts.save(contract)
+                $scope.dataProduct = [];
+                angular.forEach($scope.products, function (product) {
+				    if (product.$id !== "") {
+				      $scope.data = {
+				        productCode: product.productCode,
+                        productName: product.productName,
+                        productDesc:product.productDesc,
+                        productSize: product.productSize,
+                        productPhoto: product.productPhoto,
+                        productColor: product.productColor,
+                        productPrize: product.productPrize,
+                        productSellPrize: product.productSellPrize,
+                        quantity: product.amount
+				      }
+				      $scope.dataProduct.push($scope.data);
+				    }
+				})
+				if (!$scope.jlhUang) {
+					$scope.jlhUang = 0;
+					$scope.cashback = 0;
+				}
+				if (!$scope.jlhUang) {
+					$scope.jlhUang = 0;
+					$scope.cashback = 0;
+				}
+				if (!$scope.refNumber) {
+					$scope.refNumber = "xxxx";
+				}
+                $scope.temp = {
+                    profit: $scope.selisih,
+                    quantity: $scope.totalBiaya,
+                    sales: $scope.quantity,
+                    caraBayar: $scope.bayar,
+                    pembayaran: $scope.jlhUang,
+                    cashback: $scope.cashback,
+                    refNumber: $scope.refNumber,
+                    isLegal: true,
+                    dateCreated: $filter('date')(new Date(), 'MMM dd yyyy'),
+                    addedBy: myCache.get('thisUserId'),
+                    dateUpdated: Date.now()
                 }
-            });
+                // To update data by calling ContractDB.update(contract) service.
+                if ($scope.actionDelete) {
+                    var ref = TransactionFactory.transactionRef();
+                    var newData = ref.child(transaction.$id);
+                    newData.update($scope.temp);
+                    $scope.products = [];
+                } // End update data. 
+
+                // To add new data by calling ContractDB.add(contract) service.
+                else {
+                    var ref = TransactionFactory.transactionRef();
+                    var newData = ref.push($scope.temp);
+                    var transRef = newData.child("products");
+                    var cusRef = newData.child("customer");
+                    transRef.update($scope.dataProduct);
+                    cusRef.update($scope.customer);
+                    $scope.products = [];
+                }// End  add new  data.
+                angular.forEach($scope.products, function (product) {
+				    if (product.$id !== "") {
+				      var stockToko = parseFloat(product.stockToko) - parseFloat(product.amount);
+				      var productStock = parseFloat(stockToko) + parseFloat(product.stockGudang) + parseFloat(product.stockRumah);
+				      $scope.data = {
+				          stockToko: stockToko,
+				          productStock: productStock,
+				          addedBy: myCache.get('thisUserId'),
+				          dateUpdated: Date.now()
+				      }
+				      var updateProduct = MasterFactory.pRef();
+				      var newUpdate = updateProduct.child(product.$id);
+				      newUpdate.update($scope.data);
+				    }
+				})
+                // Showing toast for save data is success.
+                $mdToast.show({
+                    controller: 'toastController',
+                    templateUrl: 'toast.html',
+                    hideDelay: 400,
+                    position: 'top',
+                    locals: {
+                        displayOption: {
+                            title: "Transaction Saved !"
+                        }
+                    }
+                });
+
+                // After save success it will navigate back to contract list page.
+                $timeout(function () {
+                    $ionicHistory.goBack();
+                }, 800);
+            }
+            catch (e) {
+                // Showing toast for unable to save data.
+                $mdToast.show({
+                    controller: 'toastController',
+                    templateUrl: 'toast.html',
+                    hideDelay: 800,
+                    position: 'top',
+                    locals: {
+                        displayOption: {
+                            title: window.globalVariable.message.errorMessage
+                        }
+                    }
+                });
+            }
         }, function () {
             // For cancel button to complete order.
         });
     }// End showConfirmDialog.
+
+    $scope.validateRequiredField = function () {
+
+        return (($scope.jlhUang == "") || ($scope.refNumber == "" )|| ($scope.customer == undefined ));
+    };// End validate the required field.
+
+    $scope.showListBottomSheet = function ($event) {
+        $scope.disableSaveBtn = $scope.validateRequiredField();
+        $mdBottomSheet.show({
+            templateUrl: 'mobile-contract-actions-template.html',
+            targetEvent: $event,
+            scope: $scope.$new(false),
+        });
+    };// End showing the bottom sheet.
+
+    $scope.initialForm();
 })
 
 .controller('suratJalanCtrl', function ($scope,$stateParams, $timeout, TransactionFactory, $state) {

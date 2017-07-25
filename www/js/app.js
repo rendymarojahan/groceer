@@ -295,6 +295,9 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'ngMaterial', 'ngMes
 
   .state('app.productCheckout', {
       url: "/productCheckout",
+      params: {
+          product: null,
+      },
       views: {
           'menuContent': {
               templateUrl: "templates/product-checkout.html",
