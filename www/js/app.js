@@ -392,6 +392,7 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'ngMaterial', 'ngMes
 
   .state('app.dataProduct', {
       url: "/dataProduct",
+      cache: false,
       views: {
           'menuContent': {
               templateUrl: "templates/data-product.html",

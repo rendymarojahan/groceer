@@ -353,8 +353,12 @@ angular.module('starter.services', [])
 
 .service("AddProductService", function () {
         var numpro = this;
+        var purchase = this;
         numpro.addNum = function (value) {
             this.amount = value;
+        }
+        purchase.newPur = function (value) {
+            this.status = value;
         }
 })
 

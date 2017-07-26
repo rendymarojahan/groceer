@@ -567,19 +567,19 @@ angular.module('starter.controllers', [])
     // It will initial all variable data and let the function works when page load.
     $scope.initialForm = function () {
         // $scope.productList is the variable that store user product data.
-        $scope.productList = MasterFactory.getProducts();
+        $scope.products = MasterFactory.getProducts();
 
         // Loading progress.
         $timeout(function () {
             if ($scope.isAndroid) {
-                jQuery('#product-list-loading-progress').show();
+                jQuery('#product-data-loading-progress').show();
             }
             else {
-                jQuery('#product-list-loading-progress').fadeIn(700);
+                jQuery('#product-data-loading-progress').fadeIn(700);
             }
         }, 400);
         $timeout(function () {
-            jQuery('#product-list-loading-progress').hide();
+            jQuery('#product-data-loading-progress').hide();
             jQuery('#product-list-content').fadeIn();
         }, 4000);// End loading progress.
     };// End initialForm.
@@ -605,7 +605,7 @@ angular.module('starter.controllers', [])
                     // Success retrieve data.
                         // Store user data to $scope.productList.
                     for (var product = 0; product < snap.length; product++) {
-                        $scope.productList.push(snap[product]);
+                        $scope.products.push(snap[product]);
                     }
                     // To stop loading progress.
                     $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -904,10 +904,18 @@ angular.module('starter.controllers', [])
         $scope.initialForm();
 })  
 
-.controller('productListCtrl', function ($scope, $timeout, $state, $http, MasterFactory, $mdDialog, $mdToast, AddProductService) {
+.controller('productListCtrl', function ($scope, $timeout, $state, $http, MasterFactory, $mdDialog, $ionicPopup, $mdToast, AddProductService) {
 
     // This function is the first activity in the controller. 
     // It will initial all variable data and let the function works when page load.
+    $scope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+        if (fromState.name === "app.productCheckout") {
+            $scope.status = AddProductService.status;
+	        if ($scope.status) {
+	        	$scope.checkout = [];
+	        }
+        }
+    });
     $scope.checkout = [];
     $scope.initialForm = function () {
         // $scope.productList is the variable that store user product data.
@@ -935,9 +943,26 @@ angular.module('starter.controllers', [])
     // targetPage = destination page.
     // objectData = object data that sent to destination page.
     $scope.navigateTo = function (targetPage, objectData) {
-        $state.go(targetPage, {
-            product: $scope.checkout
-        });
+    	if ($scope.checkout.length > 0) {
+    		$state.go(targetPage, {
+	            product: $scope.checkout
+	        });
+	        $scope.purchase = false;
+	        AddProductService.newPur($scope.purchase);
+    	} else {
+    		$mdDialog.show({
+			    controller: 'ProductDialogController',
+			    templateUrl: 'confirm-dialog.html',
+			    locals: {
+			        displayOption: {
+			            title: "Basket Empty",
+			            content: "Choose Product First",
+			            ok: "Got It"
+			        }
+			    }
+			});
+    	}
+        
     };// End navigateTo.
 
     $scope.addProduct = function (product, $event) {
@@ -949,6 +974,7 @@ angular.module('starter.controllers', [])
 		    locals: {
 		        displayOption: {
 		            title: "Add product?",
+		            masuk: "masuk",
 		            ok: "Add",
 		            cancel: "Close"
 		        }
@@ -957,34 +983,79 @@ angular.module('starter.controllers', [])
 		     // For confirm button to save data.
 		    try {
 		    	$scope.amount = AddProductService.amount;
-		    	$scope.temp = {
-		    		$id: product.$id,
-                    productCode: product.productCode,
-                    productName: product.productName,
-                    productDesc: product.productDesc,
-                    productSize: product.productSize,
-                    productPhoto: product.productPhoto,
-                    productColor: product.productColor,
-                    productPrize: product.productPrize,
-                    productSellPrize: product.productSellPrize,
-                    stockGudang: product.stockGudang,
-                    stockRumah: product.stockRumah,
-                    stockToko: product.stockToko,
-                    productStock: product.productStock,
-                    amount: $scope.amount
-                }
-                $scope.checkout.push($scope.temp);
-		        $mdToast.show({
-		            controller: 'toastController',
-		            templateUrl: 'toast.html',
-		            hideDelay: 400,
-		            position: 'top',
-		            locals: {
-		                displayOption: {
-		                    title: $scope.amount + " Product Added !"
-		                }
-		            }
-		        });
+		    	$scope.lanjut = true;
+		    	if ($scope.amount >= product.stockToko) {
+		    		$mdDialog.show({
+					    controller: 'ProductDialogController',
+					    templateUrl: 'confirm-dialog.html',
+					    targetEvent: $event,
+					    locals: {
+					        displayOption: {
+					            title: "Stock Not Enough!",
+					            content: product.stockToko + " Available Stock in Toko",
+					            ok: "Got It"
+					        }
+					    }
+					}).then(function () {
+						$mdDialog.show({
+						    controller: 'ProductDialogController',
+						    templateUrl: 'confirm-dialog.html',
+						    targetEvent: $event,
+						    locals: {
+						        displayOption: {
+						            title: "Stock Not Enough!",
+						            content: product.stockGudang + " Available Stock in Gudang",
+						            ok: "Got It"
+						        }
+						    }
+						}).then(function () {
+							$mdDialog.show({
+							    controller: 'ProductDialogController',
+							    templateUrl: 'confirm-dialog.html',
+							    targetEvent: $event,
+							    locals: {
+							        displayOption: {
+							            title: "Stock Not Enough!",
+							            content: product.stockRumah + " Available Stock in Rumah",
+							            cancel: "Got It"
+							        }
+							    }
+							});
+						})
+					})
+			        $scope.lanjut = false;
+		    	}
+		    	if ($scope.lanjut) {
+		    		$scope.temp = {
+			    		$id: product.$id,
+	                    productCode: product.productCode,
+	                    productName: product.productName,
+	                    productDesc: product.productDesc,
+	                    productSize: product.productSize,
+	                    productPhoto: product.productPhoto,
+	                    productColor: product.productColor,
+	                    productPrize: product.productPrize,
+	                    productSellPrize: product.productSellPrize,
+	                    stockGudang: product.stockGudang,
+	                    stockRumah: product.stockRumah,
+	                    stockToko: product.stockToko,
+	                    productStock: product.productStock,
+	                    amount: $scope.amount
+	                }
+	                $scope.checkout.push($scope.temp);
+			        $mdToast.show({
+			            controller: 'toastController',
+			            templateUrl: 'toast.html',
+			            hideDelay: 400,
+			            position: 'top',
+			            locals: {
+			                displayOption: {
+			                    title: $scope.amount + " Product Added !"
+			                }
+			            }
+			        });
+		    	}
+		    	
 		        // After save success it will navigate back to contract list page.
 		        $timeout(function () {
 		        }, 800);
@@ -1118,7 +1189,7 @@ angular.module('starter.controllers', [])
     $scope.initialForm();
 })
 
-.controller('productCheckoutCtrl', function ($scope, $mdToast, $mdDialog, $stateParams, MasterFactory, $mdBottomSheet, TransactionFactory, myCache) {
+.controller('productCheckoutCtrl', function ($scope, $mdToast, $mdDialog, $filter, $state, $timeout, $stateParams, MasterFactory, AddProductService, $mdBottomSheet, TransactionFactory, myCache, $ionicHistory) {
     //You can do some thing hear when tap on a credit card button.
     $scope.initialForm = function () {
         // $scope.product is product detail
@@ -1146,8 +1217,16 @@ angular.module('starter.controllers', [])
     	$scope.cashback = data - $scope.totalBiaya;
     	$scope.jlhUang = data;
     }// End doSomeThing.
+    $scope.refNum = function (data) {
+    	$scope.refNumber = data;
+    }// End doSomeThing.
     $scope.pelanggan = function (data) {
-    	$scope.customer = data;
+    	$scope.customer = {
+		 address: data.address,
+		 customerName: data.customerName,
+		 email: data.email,
+		 telephone: data.telephone
+    	}
     }// End doSomeThing.
 
     $scope.cash = function () {
@@ -1222,8 +1301,8 @@ angular.module('starter.controllers', [])
 				}
                 $scope.temp = {
                     profit: $scope.selisih,
-                    quantity: $scope.totalBiaya,
-                    sales: $scope.quantity,
+                    quantity: $scope.quantity,
+                    sales: $scope.totalBiaya,
                     caraBayar: $scope.bayar,
                     pembayaran: $scope.jlhUang,
                     cashback: $scope.cashback,
@@ -1238,7 +1317,6 @@ angular.module('starter.controllers', [])
                     var ref = TransactionFactory.transactionRef();
                     var newData = ref.child(transaction.$id);
                     newData.update($scope.temp);
-                    $scope.products = [];
                 } // End update data. 
 
                 // To add new data by calling ContractDB.add(contract) service.
@@ -1249,7 +1327,6 @@ angular.module('starter.controllers', [])
                     var cusRef = newData.child("customer");
                     transRef.update($scope.dataProduct);
                     cusRef.update($scope.customer);
-                    $scope.products = [];
                 }// End  add new  data.
                 angular.forEach($scope.products, function (product) {
 				    if (product.$id !== "") {
@@ -1281,6 +1358,8 @@ angular.module('starter.controllers', [])
 
                 // After save success it will navigate back to contract list page.
                 $timeout(function () {
+                	$scope.purchase = true;
+                	AddProductService.newPur($scope.purchase);
                     $ionicHistory.goBack();
                 }, 800);
             }

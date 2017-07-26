@@ -63,6 +63,14 @@
                 </md-menu>
             </div>
         </div>
+        <div ng-show="customer" class="row credit-card">
+            <div class="col-25 credit-card-icon">
+                <i class="fa fa-user"></i>
+            </div>
+            <div class="col-67 credit-card-number">
+            <span class="card-number"> {{customer.customerName}}</span>
+            </div>
+        </div>
         <div class="row credit-card">
             <div class="col-25 credit-card-icon">
                 <i class="fa fa-sign-in"></i>
@@ -136,7 +144,7 @@
         <div ng-show="isRefer" class="row">
             <div class="col complete-order">
                 <md-input-container md-no-float>
-                    <input ng-model="refNumber" name="productCode" placeholder="Reference Number">
+                    <input ng-model="refNumber" name="productCode" placeholder="Reference Number" ng-change="refNum(refNumber)">
                 </md-input-container>
             </div>
         </div>

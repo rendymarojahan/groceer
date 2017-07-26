@@ -28,7 +28,7 @@
         <div class="row">
             <div class="col">
                 <!--pin section-->
-                <div class="pin" ng-if="$even" ng-repeat="product in productList  |  filter: filterText | orderBy: 'productCode'"
+                <div class="pin" ng-if="$even" ng-repeat="product in products  |  filter: filterText | orderBy: 'productCode'"
                      ng-click="navigateTo('app.productDetail',product)">
                     <img ng-src="data:image/jpeg;base64,{{product.productPhoto}}"/>
 
@@ -48,7 +48,7 @@
 
             <div class="col">
                 <!--pin section-->
-                <div class="pin" ng-if="$odd" ng-repeat="product in productList  |  filter: filterText | orderBy: 'productCode'"
+                <div class="pin" ng-if="$odd" ng-repeat="product in products  |  filter: filterText | orderBy: 'productCode'"
                      ng-click="navigateTo('app.productDetail',product)">
                     <img ng-src="data:image/jpeg;base64,{{product.productPhoto}}"/>
 
@@ -80,7 +80,7 @@
     <!--end button section-->
 
     <!--loading progress-->
-    <div id="product-list-loading-progress" class="loading-progress fade-in">
+    <div id="product-data-loading-progress" class="loading-progress fade-in">
         <ion-spinner ng-if="!isAndroid" class="progress-circular"></ion-spinner>
         <md-progress-circular ng-if="isAndroid" md-mode="indeterminate"></md-progress-circular>
     </div><!--end loading progress-->
