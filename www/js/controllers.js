@@ -543,7 +543,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('menuDashboardCtrl', function ($scope, $mdToast) {
+.controller('menuDashboardCtrl', function ($scope, $mdToast, $state, $timeout, $ionicHistory) {
     //ShowToast for show toast when user press button.
     $scope.showToast = function (menuName) {
         //Calling $mdToast.show to show toast.
@@ -559,6 +559,97 @@ angular.module('starter.controllers', [])
             }
         });
     }// End showToast.
+
+    $scope.navigateTo = function (stateName, stateDate) {
+        $timeout(function () {
+            if ($ionicHistory.currentStateName() != stateName) {
+                $ionicHistory.nextViewOptions({
+                    disableAnimate: false,
+                    disableBack: true
+                });
+                $state.go(stateName, {
+		            status: stateDate
+		        });
+            }
+        }, ($scope.isAnimated  ? 300 : 0));
+    }; // End of navigateTo.
+})
+
+.controller('reportCtrl', function ($scope, $mdToast, $state, $filter, $timeout, $ionicHistory, TransactionFactory, $stateParams) {
+    //ShowToast for show toast when user press button.
+    $scope.initialForm = function () {
+    	$scope.pickDate = $stateParams.status;
+    	if ($scope.pickDate) {
+    		if ($scope.pickDate == "Harian") {
+    			$scope.data = $filter('date')(new Date(), 'MMM dd yyyy')
+    			$scope.isHari = true;
+    			$scope.isBulan = false;
+    			$scope.isTahun = false;
+    		}
+    		if ($scope.pickDate == "Bulanan") {
+    			$scope.data = $filter('date')(new Date(), 'MMM yyyy')
+    			$scope.isHari = false;
+    			$scope.isBulan = true;
+    			$scope.isTahun = false;
+    		}
+    		if ($scope.pickDate == "Tahunan") {
+    			$scope.data = $filter('date')(new Date(), 'yyyy')
+    			$scope.isHari = false;
+    			$scope.isBulan = false;
+    			$scope.isTahun = true;
+    		}
+
+    	}
+        $scope.transactions = TransactionFactory.getTransactions($scope.data);
+        $scope.transactions.$loaded().then(function (x) {
+	      var transaksi = 0;
+    	  var profit = 0;
+    	  var quantity = 0;
+	      var index;
+	      for (index = 0; index < $scope.transactions.length; ++index) {
+	          var data = $scope.transactions[index];
+	          if (data.$id !== "") {
+	              transaksi = transaksi + parseFloat(data.sales);
+	              profit = profit + parseFloat(data.profit);
+	              quantity = quantity + parseFloat(data.quantity);
+	          }
+	      }
+	      $scope.transaksi = transaksi;
+	      $scope.profit = profit;
+	      $scope.quantity = quantity;
+	    }).catch(function (error) {
+	        console.error("Error:", error);
+	    });
+    };// End initialForm.
+
+    $scope.showToast = function (menuName) {
+        //Calling $mdToast.show to show toast.
+        $mdToast.show({
+            controller: 'toastController',
+            templateUrl: 'toast.html',
+            hideDelay: 800,
+            position: 'top',
+            locals: {
+                displayOption: {
+                    title: 'Going to ' + menuName + " !!"
+                }
+            }
+        });
+    }// End showToast.
+
+    $scope.navigateTo = function (stateName) {
+        $timeout(function () {
+            if ($ionicHistory.currentStateName() != stateName) {
+                $ionicHistory.nextViewOptions({
+                    disableAnimate: false,
+                    disableBack: true
+                });
+                $state.go(stateName);
+            }
+        }, ($scope.isAnimated  ? 300 : 0));
+    }; // End of navigateTo.
+
+    $scope.initialForm();
 })
 
 .controller('dataProductCtrl', function ($scope, $timeout, $state, $http, MasterFactory) {
@@ -580,7 +671,7 @@ angular.module('starter.controllers', [])
         }, 400);
         $timeout(function () {
             jQuery('#product-data-loading-progress').hide();
-            jQuery('#product-list-content').fadeIn();
+            jQuery('#product-data-content').fadeIn();
         }, 4000);// End loading progress.
     };// End initialForm.
 

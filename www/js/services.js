@@ -149,6 +149,7 @@ angular.module('starter.services', [])
         var ref = {};
         var inventoriesRef = {};
         var transactionRef = {};
+        var transactionsRef = {};
         var emailsRef = {};
         var ordersRef = {};
         var overviewsRef = {};
@@ -162,6 +163,11 @@ angular.module('starter.services', [])
             transactionRef: function () {
                 transactionRef = fb.child("members").child(thisShopId).child("transactions");
                 return transactionRef;
+            },
+            getTransactions: function (data) {
+                ref = fb.child("members").child(thisShopId).child("transactions").orderByChild("dateCreated").startAt(data);
+                transactionsRef = $firebaseArray(ref);
+                return transactionsRef;
             },
             getInventories: function () {
                 ref = fb.child("members").child(thisShopId).child("inventories");

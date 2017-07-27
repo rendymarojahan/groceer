@@ -270,6 +270,19 @@ angular.module('starter', ['ionic', 'ngIOS9UIWebViewPatch', 'ngMaterial', 'ngMes
       }
   })
 
+  .state('app.report', {
+      url: "/report",
+      params: {
+          status: null,
+      },
+      views: {
+          'menuContent': {
+              templateUrl: "templates/report.html",
+              controller: "reportCtrl"
+          }
+      }
+  })
+
   .state('app.productList', {
       url: "/productList",
       views: {

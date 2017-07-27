@@ -1,0 +1,151 @@
+<!--View Information-->
+<!--View name : Pricing-->
+<!--State name : app.pricing-->
+<!--URL : #app/pricing-->
+
+<ion-view title="Summary Report">
+    <!--pricing section-->
+    <ion-content id="pricing-content">
+        <!--header section-->
+        <div ng-show="isHari">
+            <div class="row price-header">
+                <div class="col-66 header-name">
+                    Laporan Tanggal {{data}}
+                </div>
+                <div class="col header-more">
+                    View Details <i class="fa fa-angle-right"></i>
+                </div>
+            </div> <!--end header section-->
+
+            <!--price detail section-->
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Total Transaksi
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme material-background">
+                        {{transaksi | currency:"Rp ":0}}
+                    </a>
+                </div>
+            </div>
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Total Quantity
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme material-background">
+                        {{(quantity | number:0) + " Pcs"}}
+                    </a>
+                </div>
+            </div>
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Profit
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme material-background">
+                        {{profit | currency:"Rp ":0}}
+                    </a>
+                </div>
+            </div>
+            <!--end price detail section-->
+            <hr/>
+        </div>
+        
+
+        <!--header section-->
+        <div ng-show="isBulan">
+            <div class="row price-header">
+                <div class="col-66 header-name">
+                    Laporan Bulan {{data}}
+                </div>
+                <div class="col header-more">
+                    View Details <i class="fa fa-angle-right"></i>
+                </div>
+            </div><!--end header section-->
+
+            <!--price detail section-->
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Total Transaksi
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme md-warn">
+                        {{transaksi | currency:"Rp ":0}}
+                    </a>
+                </div>
+            </div>
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Total Quantity
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme md-warn">
+                        {{(quantity | number:0) + " Pcs"}}
+                    </a>
+                </div>
+            </div>
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Profit
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme md-warn">
+                        {{profit | currency:"Rp ":0}}
+                    </a>
+                </div>
+            </div>
+            <!--end price detail section-->
+            <hr/>
+        </div>
+        
+
+        <!--header section-->
+        <div ng-show="isTahun">
+            <div class="row price-header">
+                <div class="col-66 header-name">
+                    Laporan Tahun {{data}}
+                </div>
+                <div class="col header-more">
+                    View Details <i class="fa fa-angle-right"></i>
+                </div>
+            </div><!--end header section-->
+
+            <!--price detail section-->
+            <!--price detail section-->
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Total Transaksi
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme gold-background">
+                        {{transaksi | currency:"Rp ":0}}
+                    </a>
+                </div>
+            </div>
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Total Quantity
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme gold-background">
+                        {{(quantity | number:0) + " Pcs"}}
+                    </a>
+                </div>
+            </div>
+            <div class="row price-detail">
+                <div class="col-50 package-name">
+                    Profit
+                </div>
+                <div class="col-33 subscribe-button">
+                    <a class="md-raised md-button md-default-theme gold-background">
+                        {{profit | currency:"Rp ":0}}
+                    </a>
+                </div>
+            </div>
+            <hr/>
+            <!--end price detail section-->
+        </div>
+        
+    </ion-content><!--end pricing section-->
+</ion-view>

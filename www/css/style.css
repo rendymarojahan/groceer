@@ -1297,7 +1297,8 @@ md-sidenav {
       font-weight: 400; }
     #pricing-content .price-detail .subscribe-button a {
       font-size: 18px;
-      color: white; }
+      color: white; 
+      width: 170px;}
       #pricing-content .price-detail .subscribe-button a.gold-background {
         background-color: #e3cf7a !important; }
 
